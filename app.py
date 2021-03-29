@@ -1,10 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
 app.config['SQLALCHEMY_DATABASE_URI'] =  'postgresql://postgres:12345@localhost:5432/todoapp'
 
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 class Todo(db.Model):
     __tablename__ = 'todos'
     id = db.Column(db.Integer, primary_key=True)
@@ -24,3 +25,4 @@ def create():
     new_description = request.form.get('description')
     db.session.add(Todo(description=new_description))
     db.session.commit()
+    return redirect(url_for('index'))
