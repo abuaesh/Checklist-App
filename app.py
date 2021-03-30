@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -23,7 +23,10 @@ def index():
 @app.route('/create', methods=['POST'])
 def create():
     #Delete all items in the list: db.session.query(Todo).delete()
-    new_description = request.form.get('description')
-    db.session.add(Todo(description=new_description))
+    new_description = (request.get_json())['description']
+    todo = Todo(description=new_description)
+    db.session.add(todo)
     db.session.commit()
-    return redirect(url_for('index'))
+    return {
+        'description' : todo.description
+        }

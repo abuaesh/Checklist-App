@@ -25,7 +25,7 @@
             </ul>
         </div>
         <script>
-            document.getElementById('form').onsubmit = function(){
+            document.getElementById('form').onsubmit = function(e){
                 e.preventDefault();
 
                 fetch('/create', {
@@ -38,8 +38,8 @@
                     }
                 }).then(function(response){
                     return response.json();
-                }).the(function(jsonResponse){
-                    const liItem = document.createElement('li');
+                }).then(function(jsonResponse){
+                    const liItem = document.createElement('LI');
                     liItem.innerHTML = jsonResponse['description'];
                     document.getElementById('todos').appendChild(liItem);
                     document.getElementById('error').className = 'hidden';
