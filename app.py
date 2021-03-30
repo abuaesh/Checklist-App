@@ -22,6 +22,7 @@ def index():
 
 @app.route('/create', methods=['POST'])
 def create():
+    #Delete all items in the list: db.session.query(Todo).delete()
     new_description = request.form.get('description')
     db.session.add(Todo(description=new_description))
     db.session.commit()
