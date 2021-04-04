@@ -31,8 +31,7 @@ def index():
 @app.route('/create', methods=['POST'])
 def create():
     error = False
-    #For debugging purpose only: Delete all items in the list: 
-    db.session.query(Todo).delete()
+    #For debugging purpose only: Delete all items in the list: db.session.query(Todo).delete()
     new_description = (request.get_json())['description']
     try:
         todo = Todo(description=new_description)
@@ -49,6 +48,7 @@ def create():
             abort (400)
         else:
             return {'description' : new_description, 'completed' : False, 'id' : todoId}
+            #return redirect(url_for('index'))
 
 @app.route('/<item_id>/set-completed', methods=['POST'])
 def set_completed(item_id):

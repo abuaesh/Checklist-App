@@ -42,40 +42,55 @@
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(function(response){
+                })
+                .then(function(response){
                     return response.json();
                 }).then(function(jsonResponse){
                     const liItem = document.createElement('LI');
-                    liItem.innerHTML = '<input class="check-completed" type="checkbox" data-id="'+
-                                        jsonResponse['id'] + '">' + jsonResponse['description'];
+                    // const checkboxItem = document.createElement('INPUT');
+                    // checkboxItem.setAttribute('type', 'checkbox');
+                    // checkboxItem.className('check-completed');
+                    // checkboxItem.setAttribute('data-id', jsonResponse['id']);
+                    // checkboxItem.onchange = set_listener(e);
+
+                    // liItem.appendChild(checkboxItem);
+
+                    liItem.innerHTML = '<input class="check-completed" type="checkbox" onchange="set_listener" data-id="'+
+                                     jsonResponse['id'] + '">' + jsonResponse['description'];
+                    
                     console.log(jsonResponse);
                     console.log(liItem.innerHTML);
                     document.getElementById('todos').appendChild(liItem);
-                    checkboxes = document.querySelectorAll(".check-completed");
-                    console.log(checkboxes);
+                    //liItem.innerHTML += jsonResponse['description'];
                     document.getElementById('error').className = 'hidden';
-                }).catch(function(){
+                    window.location.reload(true);
+                })
+                .catch(function(){
                     document.getElementById('error').className = '';
                 })
             }
 
             checkboxes = document.querySelectorAll(".check-completed");
+            console.log(checkboxes);
             for(let i=0; i<checkboxes.length; i++)
             {
-                const checkbox = checkboxes[i];
-                checkbox.onchange = function(e) {
-                    console.log("event", e);
-                    const itemID = e.target.dataset['id'];
-                    fetch('/' + itemID + '/set-completed', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            'completed' : e.target.checked
-                        }),
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                }
+                checkboxes[i].onchange = set_listener;
+            }
+
+            function set_listener(e)
+            {
+                console.log("event", e);
+                const itemID = e.target.dataset['id'];
+                fetch('/' + itemID + '/set-completed', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        'completed' : e.target.checked
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+            
             }
 
         </script>
