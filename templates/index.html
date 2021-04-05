@@ -10,6 +10,19 @@
                 list-style: none;
                 padding: 0;
                 margin: 0;
+                width: 150px;
+            }
+            li {
+                clear: both;
+            }
+            li button {
+                color: red;
+                -webkit-appearance: none;
+                border: none;
+                outline: none;
+                float: right;
+                font-size: 20px;
+                cursor: pointer;
             }
         </style>
     </head>
@@ -26,14 +39,17 @@
             Your Tasks:
             <ul id="todos">
                 {% for d in data %}                    
-                    <li><input class="check-completed" type="checkbox" data-id="{{ d.id }}" {% if d.completed %}checked{% endif %}>{{ d.description}}</li>
+                    <li>
+                        <input class="check-completed" type="checkbox" data-id="{{ d.id }}" {% if d.completed %}checked{% endif %}>
+                        {{ d.description}}
+                        <button class="delete-item" data-id="{{ d.id }} " onclick="delete_listener">&cross;</button>
+                    </li>
                 {% endfor %}
             </ul>
         </div>
         <script>
             document.getElementById('form').onsubmit = function(e){
                 e.preventDefault();
-
                 fetch('/create', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -46,7 +62,7 @@
                 .then(function(response){
                     return response.json();
                 }).then(function(jsonResponse){
-                    const liItem = document.createElement('LI');
+                    // const liItem = document.createElement('LI');
                     // const checkboxItem = document.createElement('INPUT');
                     // checkboxItem.setAttribute('type', 'checkbox');
                     // checkboxItem.className('check-completed');
@@ -55,12 +71,12 @@
 
                     // liItem.appendChild(checkboxItem);
 
-                    liItem.innerHTML = '<input class="check-completed" type="checkbox" onchange="set_listener" data-id="'+
-                                     jsonResponse['id'] + '">' + jsonResponse['description'];
+                    // liItem.innerHTML = '<input class="check-completed" type="checkbox" onchange="update_listener" data-id="'+
+                    //                  jsonResponse['id'] + '">' + jsonResponse['description'];
                     
-                    console.log(jsonResponse);
-                    console.log(liItem.innerHTML);
-                    document.getElementById('todos').appendChild(liItem);
+                    // console.log(jsonResponse);
+                    // console.log(liItem.innerHTML);
+                    // document.getElementById('todos').appendChild(liItem);
                     //liItem.innerHTML += jsonResponse['description'];
                     document.getElementById('error').className = 'hidden';
                     window.location.reload(true);
@@ -71,13 +87,12 @@
             }
 
             checkboxes = document.querySelectorAll(".check-completed");
-            console.log(checkboxes);
             for(let i=0; i<checkboxes.length; i++)
             {
-                checkboxes[i].onchange = set_listener;
+                checkboxes[i].onchange = update_listener;
             }
 
-            function set_listener(e)
+            function update_listener(e)
             {
                 console.log("event", e);
                 const itemID = e.target.dataset['id'];
@@ -91,6 +106,27 @@
                     }
                 })
             
+            }
+
+            delete_buttons = document.querySelectorAll(".delete-item");
+            for(let i=0; i<delete_buttons.length; i++)
+            {
+                delete_buttons[i].onclick = delete_listener;
+            }
+
+            function delete_listener(e)
+            {
+                console.log("event", e);
+                const itemID = e.target.dataset['id'];
+                fetch('/' + itemID + '/delete', {
+                    method: 'POST',
+                    body: "none",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function(){                    
+                        window.location.reload(true);
+                    });
             }
 
         </script>

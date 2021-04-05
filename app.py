@@ -26,7 +26,7 @@ class Todo(db.Model):
 
 @app.route('/')
 def index():
-    return render_template('index.html', data=Todo.query.all())
+    return render_template('index.html', data=Todo.query.order_by('id').all())
 
 @app.route('/create', methods=['POST'])
 def create():
@@ -57,6 +57,24 @@ def set_completed(item_id):
     try:
         todo = Todo.query.get(item_id)
         todo.completed = new_completed
+        db.session.commit()
+    except:
+        db.session.rollback()
+        error = True
+        print('error from server: ' + sys.exc_info())
+    finally:
+        db.session.close()
+        if error:
+            abort (400)
+        else:
+            return redirect(url_for('index'))
+
+@app.route('/<item_id>/delete', methods=['POST'])
+def delete(item_id):
+    error = False
+    try:
+        todo = Todo.query.get(item_id)
+        db.session.delete(todo)
         db.session.commit()
     except:
         db.session.rollback()
