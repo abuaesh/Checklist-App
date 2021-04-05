@@ -10,7 +10,7 @@
                 list-style: none;
                 padding: 0;
                 margin: 0;
-                width: 150px;
+                width: 200px;
             }
             li {
                 clear: both;
@@ -21,7 +21,7 @@
                 border: none;
                 outline: none;
                 float: right;
-                font-size: 20px;
+                font-size: 15px;
                 cursor: pointer;
             }
         </style>
@@ -42,10 +42,14 @@
                     <li>
                         <input class="check-completed" type="checkbox" data-id="{{ d.id }}" {% if d.completed %}checked{% endif %}>
                         {{ d.description}}
-                        <button class="delete-item" data-id="{{ d.id }} " onclick="delete_listener">&cross;</button>
+                        <button class="delete-item" data-id="{{ d.id }} ">&cross;</button>
                     </li>
                 {% endfor %}
             </ul>
+        </div>
+
+        <div>
+            <button id="delete-all-btn"> &cross; Delete All </button>
         </div>
         <script>
             document.getElementById('form').onsubmit = function(e){
@@ -119,16 +123,24 @@
                 console.log("event", e);
                 const itemID = e.target.dataset['id'];
                 fetch('/' + itemID + '/delete', {
-                    method: 'POST',
-                    body: "none",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    method: 'DELETE'
                 }).then(function(){                    
                         window.location.reload(true);
                     });
             }
 
+            const del_all_btn = document.getElementById('delete-all-btn');
+            del_all_btn.onclick = delete_all;
+
+            function delete_all(e)
+            {
+                console.log(e);
+                fetch('/delete_all', {
+                    method: 'DELETE'
+                }).then(function(){
+                    window.location.reload(true);
+                });
+            }
         </script>
     </body>
 </html>

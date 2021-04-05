@@ -69,12 +69,29 @@ def set_completed(item_id):
         else:
             return redirect(url_for('index'))
 
-@app.route('/<item_id>/delete', methods=['POST'])
+@app.route('/<item_id>/delete', methods=['DELETE'])
 def delete(item_id):
     error = False
     try:
         todo = Todo.query.get(item_id)
         db.session.delete(todo)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        error = True
+        print('error from server: ' + sys.exc_info())
+    finally:
+        db.session.close()
+        if error:
+            abort (400)
+        else:
+            return redirect(url_for('index'))
+
+@app.route('/delete_all', methods=['DELETE'])
+def delete_all():
+    error = False
+    try:
+        db.session.query(Todo).delete()
         db.session.commit()
     except:
         db.session.rollback()
