@@ -49,7 +49,9 @@
         </div>
 
         <div>
-            <button id="delete-all-btn"> &cross; Delete All </button>
+            <button id="delete-all-btn" {% if data|length < 1 %} class="hidden" {% endif %}>
+                &cross; Delete All 
+            </button>
         </div>
         <script>
             document.getElementById('form').onsubmit = function(e){
@@ -135,11 +137,15 @@
             function delete_all(e)
             {
                 console.log(e);
-                fetch('/delete_all', {
-                    method: 'DELETE'
-                }).then(function(){
-                    window.location.reload(true);
-                });
+                if(confirm("Are you sure you want to delete all the items in your list? This action is irreversible."))
+                {
+                    fetch('/delete_all', {
+                        method: 'DELETE'
+                    }).then(function(){
+                        window.location.reload(true);
+                    });
+                }
+                
             }
         </script>
     </body>
